@@ -9,7 +9,7 @@ const Slide1 = ({ isActive }) => (
 
     <h1 className={`heading-main slide-1-title ${isActive ? 'animate-fade-up delay-100' : ''}`} style={{ opacity: isActive ? undefined : 0 }}>
       Welcome to <br />
-      <span className="slide-1-highlight">Authentic deploy<br />Mithila<br />Cuisine</span><br />
+      <span className="slide-1-highlight">Authentic<br />Mithila<br />Cuisine</span><br />
       Cafe & Restro
     </h1>
 
