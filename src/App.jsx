@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight, MapPin, Sparkles, Phone, Mail, MessageSquare, User, Home } from 'lucide-react';
+import { supabase } from './supabaseClient';
 
 const Slide1 = ({ isActive }) => (
   <div className="slide slide-1">
@@ -152,6 +153,58 @@ const Slide4 = ({ isActive }) => (
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setMessage('Successfully signed in!');
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+            }
+          }
+        });
+        if (error) throw error;
+        
+        // Attempt to insert into a public users table
+        if (data.user && fullName) {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([{ id: data.user.id, full_name: fullName, email: email }]);
+            
+          if (insertError) {
+             console.error('Error inserting into public users table:', insertError);
+          }
+        }
+        
+        setMessage('Registration successful! Check your email for a confirmation link.');
+      }
+    } catch (err) {
+      setError(err.message || 'An error occurred during authentication.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-page">
@@ -161,30 +214,59 @@ const AuthPage = () => {
           {isLogin ? 'Sign in to access your Mithila Cafe account' : 'Join us to enjoy authentic flavors'}
         </p>
 
-        <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+        {error && <div style={{ color: '#d93025', marginBottom: '1rem', fontSize: '0.9rem', fontWeight: '500' }}>{error}</div>}
+        {message && <div style={{ color: '#188038', marginBottom: '1rem', fontSize: '0.9rem', fontWeight: '500' }}>{message}</div>}
+
+        <form className="auth-form" onSubmit={handleAuth}>
           {!isLogin && (
             <div className="input-group">
               <label>Full Name</label>
-              <input type="text" placeholder="John Doe" />
+              <input 
+                type="text" 
+                placeholder="John Doe" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required={!isLogin}
+              />
             </div>
           )}
           <div className="input-group">
             <label>Email</label>
-            <input type="email" placeholder="you@example.com" />
+            <input 
+              type="email" 
+              placeholder="you@example.com" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className="input-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" />
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
-          <button type="submit" className="auth-submit-btn">
-            {isLogin ? 'Sign In' : 'Sign Up'}
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
+            {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
           </button>
         </form>
 
         <div className="auth-toggle">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={() => setIsLogin(!isLogin)} className="toggle-btn">
+          <button 
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError('');
+              setMessage('');
+            }} 
+            className="toggle-btn"
+            type="button"
+          >
             {isLogin ? 'Sign up' : 'Sign in'}
           </button>
         </div>
