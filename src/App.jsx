@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight, MapPin, Sparkles, Phone, Mail, MessageSquare } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, Sparkles, Phone, Mail, MessageSquare, User, Home } from 'lucide-react';
 
 const Slide1 = ({ isActive }) => (
   <div className="slide slide-1">
@@ -150,7 +150,77 @@ const Slide4 = ({ isActive }) => (
   </div>
 );
 
+const AuthPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <h2 className="auth-title">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+        <p className="auth-subtitle">
+          {isLogin ? 'Sign in to access your Mithila Cafe account' : 'Join us to enjoy authentic flavors'}
+        </p>
+        
+        <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+          {!isLogin && (
+            <div className="input-group">
+              <label>Full Name</label>
+              <input type="text" placeholder="John Doe" />
+            </div>
+          )}
+          <div className="input-group">
+            <label>Email</label>
+            <input type="email" placeholder="you@example.com" />
+          </div>
+          <div className="input-group">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••" />
+          </div>
+          
+          <button type="submit" className="auth-submit-btn">
+            {isLogin ? 'Sign In' : 'Sign Up'}
+          </button>
+        </form>
+        
+        <div className="auth-toggle">
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button onClick={() => setIsLogin(!isLogin)} className="toggle-btn">
+            {isLogin ? 'Sign up' : 'Sign in'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Navigation = ({ currentView, setCurrentView }) => {
+  return (
+    <nav className="main-nav">
+      <div className="nav-brand">
+        AUTHENTIC MITHILA CAFE
+      </div>
+      <div className="nav-links">
+        <button 
+          className={`nav-item ${currentView === 'home' ? 'active' : ''}`}
+          onClick={() => setCurrentView('home')}
+        >
+          <Home size={20} />
+          <span className="nav-label">Home</span>
+        </button>
+        <button 
+          className={`nav-item ${currentView === 'auth' ? 'active' : ''}`}
+          onClick={() => setCurrentView('auth')}
+        >
+          <User size={20} />
+          <span className="nav-label">Sign In</span>
+        </button>
+      </div>
+    </nav>
+  );
+};
+
 export default function App() {
+  const [currentView, setCurrentView] = useState('home');
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = 4;
   
@@ -197,51 +267,49 @@ export default function App() {
 
   return (
     <div className="app-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      {/* Dynamic Header Overlay */}
-      <div className="header-overlay">
-        <div className="header-title" style={{ color: currentConfig.titleColor, transition: 'color 0.5s' }}>
-          AUTHENTIC MITHILA CAFE
-        </div>
-        <div className="header-counter" style={{ color: currentConfig.counterColor, transition: 'color 0.5s' }}>
-          {currentSlide + 1} / {totalSlides}
-        </div>
-      </div>
+      <Navigation currentView={currentView} setCurrentView={setCurrentView} />
 
-      {/* Navigation Arrows */}
-      {currentSlide > 0 && (
-        <button className="nav-arrow nav-arrow-left" onClick={handlePrev} aria-label="Previous Slide">
-          <ChevronLeft size={24} />
-        </button>
+      {currentView === 'home' ? (
+        <>
+          {/* Navigation Arrows */}
+          {currentSlide > 0 && (
+            <button className="nav-arrow nav-arrow-left" onClick={handlePrev} aria-label="Previous Slide">
+              <ChevronLeft size={24} />
+            </button>
+          )}
+          
+          {currentSlide < totalSlides - 1 && (
+            <button className="nav-arrow nav-arrow-right" onClick={handleNext} aria-label="Next Slide">
+              <ChevronRight size={24} />
+            </button>
+          )}
+
+          {/* Slides Wrapper */}
+          <div 
+            className="slides-wrapper" 
+            style={{ transform: `translateX(-${currentSlide * 100}vw)` }}
+          >
+            <Slide1 isActive={currentSlide === 0} />
+            <Slide2 isActive={currentSlide === 1} />
+            <Slide3 isActive={currentSlide === 2} />
+            <Slide4 isActive={currentSlide === 3} />
+          </div>
+
+          {/* Pagination Indicators */}
+          <div className="pagination-container">
+            <div className="pagination-pill">
+              {[0, 1, 2, 3].map((index) => (
+                <div 
+                  key={index} 
+                  className={`dot ${currentConfig.dotClass} ${currentSlide === index ? 'active' : ''}`}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <AuthPage />
       )}
-      
-      {currentSlide < totalSlides - 1 && (
-        <button className="nav-arrow nav-arrow-right" onClick={handleNext} aria-label="Next Slide">
-          <ChevronRight size={24} />
-        </button>
-      )}
-
-      {/* Slides Wrapper */}
-      <div 
-        className="slides-wrapper" 
-        style={{ transform: `translateX(-${currentSlide * 100}vw)` }}
-      >
-        <Slide1 isActive={currentSlide === 0} />
-        <Slide2 isActive={currentSlide === 1} />
-        <Slide3 isActive={currentSlide === 2} />
-        <Slide4 isActive={currentSlide === 3} />
-      </div>
-
-      {/* Pagination Indicators */}
-      <div className="pagination-container">
-        <div className="pagination-pill">
-          {[0, 1, 2, 3].map((index) => (
-            <div 
-              key={index} 
-              className={`dot ${currentConfig.dotClass} ${currentSlide === index ? 'active' : ''}`}
-            />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
