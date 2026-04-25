@@ -777,3 +777,139 @@ body {
 .toggle-btn:hover {
   text-decoration: underline;
 }
+
+/* --- Profile Page Styles --- */
+
+.profile-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-bg-light);
+  padding: 2rem;
+  gap: 1.5rem;
+  overflow-y: auto;
+  animation: scaleInFade 0.4s ease-out forwards;
+}
+
+.profile-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--color-accent-orange);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.2rem;
+}
+
+.profile-email, .profile-phone {
+  color: #665b55;
+  font-size: 0.9rem;
+}
+
+.sign-out-btn {
+  background: rgba(217, 48, 37, 0.1);
+  color: #d93025;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.8rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.sign-out-btn:hover {
+  background: rgba(217, 48, 37, 0.2);
+}
+
+.orders-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f0e9dd;
+  padding-bottom: 0.8rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  gap: 1rem;
+  color: #8c827a;
+}
+
+.empty-icon {
+  color: #e0d8cd;
+}
+
+.shop-now-btn {
+  background: var(--color-accent-yellow);
+  color: var(--color-primary-dark);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-top: 0.5rem;
+}
+
+.shop-now-btn:active {
+  transform: scale(0.95);
+}

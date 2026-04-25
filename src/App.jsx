@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight, MapPin, Sparkles, Phone, Mail, MessageSquare, User, Home } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, MapPin, Sparkles, Phone, Mail, MessageSquare, User, Home, ShoppingBag, LogOut } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 const Slide1 = ({ isActive }) => (
@@ -292,7 +292,51 @@ const AuthPage = ({ setCurrentView }) => {
   );
 };
 
-const Navigation = ({ currentView, setCurrentView }) => {
+const ProfilePage = ({ session, setCurrentView }) => {
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setCurrentView('home');
+  };
+
+  const user = session?.user;
+  const fullName = user?.user_metadata?.full_name || 'Customer';
+  const email = user?.email || '';
+  const phone = user?.user_metadata?.phone || '';
+
+  return (
+    <div className="profile-page">
+      <div className="profile-card">
+        <div className="profile-header">
+          <div className="profile-avatar">
+            {fullName.charAt(0).toUpperCase()}
+          </div>
+          <div className="profile-details">
+            <h2 className="profile-name">{fullName}</h2>
+            <p className="profile-email">{email}</p>
+            {phone && <p className="profile-phone">{phone}</p>}
+          </div>
+        </div>
+        
+        <button onClick={handleSignOut} className="sign-out-btn">
+          <LogOut size={18} /> Sign Out
+        </button>
+      </div>
+
+      <div className="orders-card">
+        <h3 className="section-title">My Orders</h3>
+        <div className="empty-state">
+          <ShoppingBag size={48} className="empty-icon" />
+          <p>No orders yet!</p>
+          <button onClick={() => setCurrentView('home')} className="shop-now-btn">
+            Explore Menu
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Navigation = ({ currentView, setCurrentView, session }) => {
   return (
     <nav className="main-nav">
       <div className="nav-brand">
@@ -311,7 +355,7 @@ const Navigation = ({ currentView, setCurrentView }) => {
           onClick={() => setCurrentView('auth')}
         >
           <User size={20} />
-          <span className="nav-label">Sign In</span>
+          <span className="nav-label">{session ? 'Profile' : 'Sign In'}</span>
         </button>
       </div>
     </nav>
@@ -321,7 +365,22 @@ const Navigation = ({ currentView, setCurrentView }) => {
 export default function App() {
   const [currentView, setCurrentView] = useState('home');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [session, setSession] = useState(null);
   const totalSlides = 4;
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Slide configs for dynamic header colors
   const slideConfigs = [
@@ -366,7 +425,7 @@ export default function App() {
 
   return (
     <div className="app-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      <Navigation currentView={currentView} setCurrentView={setCurrentView} />
+      <Navigation currentView={currentView} setCurrentView={setCurrentView} session={session} />
 
       {currentView === 'home' ? (
         <>
@@ -406,9 +465,13 @@ export default function App() {
             </div>
           </div>
         </>
-      ) : (
-        <AuthPage setCurrentView={setCurrentView} />
-      )}
+      ) : currentView === 'auth' ? (
+        session ? (
+          <ProfilePage session={session} setCurrentView={setCurrentView} />
+        ) : (
+          <AuthPage setCurrentView={setCurrentView} />
+        )
+      ) : null}
     </div>
   );
 }
