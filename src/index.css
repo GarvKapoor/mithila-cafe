@@ -1,0 +1,589 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --color-primary-red: #8e1515;
+  --color-primary-dark: #630808;
+  --color-accent-yellow: #f5b000;
+  --color-accent-orange: #d96214;
+  --color-bg-light: #fbf8f1;
+  --color-text-dark: #3a2215;
+  --color-text-light: #ffffff;
+  
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: #000;
+  color: var(--color-text-dark);
+  overflow: hidden;
+  touch-action: none; /* prevent native scrolling/swiping on the body */
+}
+
+/* Base styles to replicate the 4 slide container */
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  /* Support mobile viewport height for iOS */
+  height: 100dvh; 
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-bg-light);
+  display: flex;
+  flex-direction: column;
+}
+
+.slides-wrapper {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.slide {
+  min-width: 100vw;
+  width: 100vw;
+  height: 100%;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 6rem 1.5rem 2rem 1.5rem; /* Space for top header */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Shared Header Overlay */
+.header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none; /* Let clicks pass through if needed */
+}
+
+.header-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: inherit; /* Will be set by slide context */
+}
+
+.header-counter {
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  color: inherit;
+}
+
+/* Shared Navigation Arrows */
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  color: var(--color-primary-red);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background 0.2s;
+  pointer-events: auto;
+}
+
+.nav-arrow:active {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.nav-arrow-left {
+  left: 1rem;
+}
+
+.nav-arrow-right {
+  right: 1rem;
+}
+
+/* Pagination Dots */
+.pagination-container {
+  position: absolute;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pagination-pill {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: var(--color-primary-red);
+  width: 24px;
+  border-radius: 4px;
+}
+
+.dot.light {
+  background: rgba(255,255,255,0.4);
+}
+.dot.light.active {
+  background: var(--color-text-light);
+}
+
+/* Typography styles */
+.heading-main {
+  font-family: var(--font-heading);
+  font-size: 2.8rem;
+  line-height: 1.1;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.text-body {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Slide 1 Styles */
+.slide-1 {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(167, 24, 24, 0.8) 100%), url('/images/mithila.jpeg') center/cover no-repeat;
+  color: white;
+  align-items: center;
+  text-align: center;
+  padding-top: 8rem;
+}
+
+.slide-1::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 10px, transparent 11px),
+                    radial-gradient(circle at 80% 60%, rgba(255,255,255,0.08) 15px, transparent 16px),
+                    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.08) 8px, transparent 9px);
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.badge-open {
+  background: var(--color-accent-yellow);
+  color: var(--color-primary-dark);
+  padding: 0.4rem 1.2rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  z-index: 1;
+}
+
+.slide-1-title {
+  color: white;
+}
+
+.slide-1-highlight {
+  color: var(--color-accent-yellow);
+}
+
+.slide-1-desc {
+  margin-top: 1rem;
+  opacity: 0.95;
+  padding: 0 1rem;
+  z-index: 1;
+}
+
+.location-btn {
+  margin-top: auto;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  justify-content: center;
+  font-weight: 500;
+  z-index: 1;
+}
+
+/* Slide 2 Styles */
+.slide-2 {
+  background: linear-gradient(to bottom, rgba(251, 248, 241, 0.85) 0%, rgba(251, 248, 241, 0.95) 100%), url('/images/thekua.png') center/cover no-repeat;
+  color: var(--color-text-dark);
+}
+
+.slide-2-title-1 {
+  color: var(--color-accent-orange);
+  margin-bottom: 0;
+}
+.slide-2-title-2 {
+  color: var(--color-primary-red);
+  margin-top: -0.5rem;
+}
+
+.slide-2-desc {
+  margin-top: 1.5rem;
+  color: #5a4b41;
+}
+
+.bullet-list {
+  list-style: none;
+  margin-top: 1.5rem;
+  padding-left: 0.5rem;
+}
+
+.bullet-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: var(--color-text-dark);
+}
+
+.bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-accent-yellow);
+  border-radius: 50%;
+}
+
+.bento-cards {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+  margin-bottom: 3rem;
+}
+
+.bento-card {
+  flex: 1;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-yellow {
+  background: #f1b72e;
+  color: var(--color-primary-dark);
+}
+
+.card-red {
+  background: var(--color-primary-red);
+  color: white;
+}
+
+.card-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.card-features {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Slide 3 Styles */
+.slide-3 {
+  background-color: #8b1313;
+  color: white;
+}
+
+.slide-3-title-1 {
+  color: white;
+  margin-bottom: 0;
+}
+
+.slide-3-title-2 {
+  color: var(--color-accent-yellow);
+  margin-top: -0.5rem;
+}
+
+.slide-3-desc {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.feature-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.feature-card {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.feature-val {
+  color: var(--color-accent-yellow);
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+
+.feature-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Slide 4 Styles */
+.slide-4 {
+  background-color: var(--color-bg-light);
+  color: var(--color-text-dark);
+}
+
+.slide-4::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle at 10% 20%, rgba(200,80,50,0.06) 15px, transparent 16px),
+                    radial-gradient(circle at 90% 40%, rgba(200,80,50,0.06) 10px, transparent 11px),
+                    radial-gradient(circle at 50% 70%, rgba(200,80,50,0.06) 12px, transparent 13px);
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.connect-badge {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+  padding: 0.4rem 1.2rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 auto 1.5rem auto;
+  align-self: center;
+  z-index: 1;
+}
+
+.contact-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  z-index: 1;
+}
+
+.contact-card {
+  background: #f0e9dd;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.contact-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.icon-red {
+  background: var(--color-primary-red);
+}
+
+.icon-orange {
+  background: var(--color-accent-orange);
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #665b55;
+  margin-bottom: 0.2rem;
+}
+
+.contact-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-primary-red);
+}
+
+/* Rich Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleInFade {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideUpBounce {
+  0% { opacity: 0; transform: translateY(40px); }
+  60% { opacity: 1; transform: translateY(-5px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(245, 176, 0, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(245, 176, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 176, 0, 0); }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-scale-in {
+  opacity: 0;
+  animation: scaleInFade 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-bounce-up {
+  opacity: 0;
+  animation: slideUpBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.badge-open {
+  /* Existing styles */
+  background: var(--color-accent-yellow);
+  color: var(--color-primary-dark);
+  padding: 0.4rem 1.2rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  z-index: 1;
+  /* Added pulse */
+  animation: scaleInFade 0.5s ease-out forwards, pulseGlow 2s infinite;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* Interactive Hover/Active states */
+.bento-card {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+}
+.bento-card:active {
+  transform: scale(0.96);
+}
+
+.contact-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.contact-card:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.location-btn {
+  /* Existing styles + active state */
+  margin-top: auto;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  justify-content: center;
+  font-weight: 500;
+  z-index: 1;
+  transition: transform 0.2s, background 0.2s;
+}
+.location-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.25);
+}
