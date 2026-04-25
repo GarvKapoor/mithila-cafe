@@ -151,11 +151,12 @@ const Slide4 = ({ isActive }) => (
   </div>
 );
 
-const AuthPage = () => {
+const AuthPage = ({ setCurrentView }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -181,6 +182,7 @@ const AuthPage = () => {
           options: {
             data: {
               full_name: fullName,
+              phone: phone,
             }
           }
         });
@@ -190,14 +192,17 @@ const AuthPage = () => {
         if (data.user && fullName) {
           const { error: insertError } = await supabase
             .from('users')
-            .insert([{ id: data.user.id, full_name: fullName, email: email }]);
+            .insert([{ id: data.user.id, full_name: fullName, email: email, phone: phone }]);
             
           if (insertError) {
              console.error('Error inserting into public users table:', insertError);
           }
         }
         
-        setMessage('Registration successful! Check your email for a confirmation link.');
+        setMessage('Registration successful! Redirecting to home...');
+        setTimeout(() => {
+          setCurrentView('home');
+        }, 1500);
       }
     } catch (err) {
       setError(err.message || 'An error occurred during authentication.');
@@ -219,16 +224,28 @@ const AuthPage = () => {
 
         <form className="auth-form" onSubmit={handleAuth}>
           {!isLogin && (
-            <div className="input-group">
-              <label>Full Name</label>
-              <input 
-                type="text" 
-                placeholder="John Doe" 
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required={!isLogin}
-              />
-            </div>
+            <>
+              <div className="input-group">
+                <label>Full Name</label>
+                <input 
+                  type="text" 
+                  placeholder="John Doe" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required={!isLogin}
+                />
+              </div>
+              <div className="input-group">
+                <label>Phone Number</label>
+                <input 
+                  type="tel" 
+                  placeholder="+91 9876543210" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required={!isLogin}
+                />
+              </div>
+            </>
           )}
           <div className="input-group">
             <label>Email</label>
@@ -390,7 +407,7 @@ export default function App() {
           </div>
         </>
       ) : (
-        <AuthPage />
+        <AuthPage setCurrentView={setCurrentView} />
       )}
     </div>
   );
